@@ -1,6 +1,6 @@
 package io.github.solvo.domain.enums;
 
-public enum TransferType {
+public enum TransferStatus {
     APPROVED,
     RECUSED,
     PENDING
