@@ -9,15 +9,23 @@ import java.util.UUID;
 @Getter
 public class Transfer {
     private final UUID transferId;
-    private final UUID senderId;
-    private final UUID receiverId;
+    private final UUID senderWalletId;
+    private final UUID receiverWalletId;
     private final BigDecimal value;
     private TransferStatus status;
 
-    public Transfer(UUID transferId, UUID senderId, UUID receiverId, BigDecimal value) {
+    public Transfer(UUID transferId, UUID senderWalletId, UUID receiverWalletId, BigDecimal value) {
         this.transferId = transferId;
-        this.senderId = senderId;
-        this.receiverId = receiverId;
+        this.senderWalletId = senderWalletId;
+        this.receiverWalletId = receiverWalletId;
+        this.value = value;
+        this.status = TransferStatus.PENDING;
+    }
+
+    public Transfer(UUID senderWalletId, UUID receiverWalletId, BigDecimal value) {
+        this.transferId = UUID.randomUUID();
+        this.senderWalletId = senderWalletId;
+        this.receiverWalletId = receiverWalletId;
         this.value = value;
         this.status = TransferStatus.PENDING;
     }
