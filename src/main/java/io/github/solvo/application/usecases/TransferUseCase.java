@@ -11,13 +11,16 @@ import io.github.solvo.domain.entities.Wallet;
 import io.github.solvo.domain.enums.TransferStatus;
 
 public class TransferUseCase implements TransferUseCasePort {
+
     private final WalletRepositoryPort walletRepositoryPort;
     private final TransferRepositoryPort transferRepositoryPort;
     private final AuthorizationServicePort authorizationServicePort;
     private final NotificationPort notificationPort;
 
-    public TransferUseCase(WalletRepositoryPort walletRepositoryPort, TransferRepositoryPort transferRepositoryPort,
-                           AuthorizationServicePort authorizationServicePort, NotificationPort notificationPort) {
+    public TransferUseCase(WalletRepositoryPort walletRepositoryPort,
+                           TransferRepositoryPort transferRepositoryPort,
+                           AuthorizationServicePort authorizationServicePort,
+                           NotificationPort notificationPort) {
         this.walletRepositoryPort = walletRepositoryPort;
         this.transferRepositoryPort = transferRepositoryPort;
         this.authorizationServicePort = authorizationServicePort;
@@ -42,11 +45,12 @@ public class TransferUseCase implements TransferUseCasePort {
             return transfer;
         }
 
-        receiverWallet.receiver(transfer.getValue());
+        receiverWallet.receive(transfer.getValue());
         walletRepositoryPort.save(receiverWallet);
         walletRepositoryPort.save(senderWallet);
         transferRepositoryPort.save(transfer);
         notificationPort.notifyTransfer(transfer);
+
         return transfer;
     }
 }

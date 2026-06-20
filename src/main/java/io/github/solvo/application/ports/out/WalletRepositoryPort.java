@@ -6,7 +6,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface WalletRepositoryPort {
-feature/solvo-final
     Optional<Wallet> findByWalletId(UUID walletId);
 
 

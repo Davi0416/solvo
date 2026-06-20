@@ -39,7 +39,7 @@ public class Wallet {
         this.balance = this.balance.add(transferValue);
     }
 
-    public void receiver(BigDecimal transferValue) {
+    public void receive(BigDecimal transferValue) {
         this.balance = this.balance.add(transferValue);
     }
 }
