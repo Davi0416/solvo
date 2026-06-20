@@ -42,7 +42,7 @@ public class TransferUseCase implements TransferUseCasePort {
             return transfer;
         }
 
-        receiverWallet.receive(transfer.getValue());
+        receiverWallet.receiver(transfer.getValue());
         walletRepositoryPort.save(receiverWallet);
         walletRepositoryPort.save(senderWallet);
         transferRepositoryPort.save(transfer);
