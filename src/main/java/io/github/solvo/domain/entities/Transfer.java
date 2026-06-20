@@ -30,17 +30,26 @@ public class Transfer {
         this.status = TransferStatus.PENDING;
     }
 
-    public void approve() {
+    private void approve() {
         if (this.status != TransferStatus.PENDING) {
             throw new IllegalStateException("Apenas transferências pendentes podem ser aprovadas");
         }
         this.status = TransferStatus.APPROVED;
     }
 
-    public void recuse() {
+    private void recuse() {
         if (this.status != TransferStatus.PENDING) {
             throw new IllegalStateException("Apenas transferências pendentes podem ser recusadas");
         }
-        this.status = TransferStatus.RECUSED;
+        this.status = TransferStatus.REJECTED;
     }
+
+    public void processAuthorization(boolean isAuthorized) {
+        if (isAuthorized) {
+            this.approve();
+        } else {
+            this.recuse();
+        }
+    }
+
 }
