@@ -24,7 +24,7 @@ public class Wallet {
         if (this.userType == UserType.MERCHANT)
             throw new IllegalArgumentException("Lojistas não têm permissão para realizar transferências.");
         if (transferValue.compareTo(BigDecimal.ZERO) <= 0)
-            throw new IllegalArgumentException("O valor da transferência deve ser maior que zero");
+            throw new IllegalArgumentException("Saldo zerado não pode transferir!");
         if (transferValue.compareTo(this.balance) > 0)
             throw new IllegalArgumentException("Saldo insuficiente para concluir a transferência");
 

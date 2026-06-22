@@ -9,7 +9,6 @@ import io.github.solvo.application.ports.out.WalletRepositoryPort;
 import io.github.solvo.domain.entities.Transfer;
 import io.github.solvo.domain.entities.Wallet;
 import io.github.solvo.domain.enums.TransferStatus;
-import io.github.solvo.domain.exceptions.WalletNotFoundException;
 
 public class TransferUseCase implements TransferUseCasePort {
 
@@ -31,19 +30,20 @@ public class TransferUseCase implements TransferUseCasePort {
     @Override
     public Transfer transfer(TransferCommand command) {
         Wallet senderWallet = walletRepositoryPort.findByWalletId(command.senderWalletId())
-                .orElseThrow(() -> new WalletNotFoundException(command.senderWalletId()));
+                .orElseThrow(() -> new RuntimeException("Carteira de origem não encontrada"));
         Wallet receiverWallet = walletRepositoryPort.findByWalletId(command.receiverWalletId())
-                .orElseThrow(() -> new WalletNotFoundException(command.receiverWalletId()));
+                .orElseThrow(() -> new RuntimeException("Carteira de destino não encontrada"));
 
         Transfer transfer = senderWallet.transfer(command.transferValue(), receiverWallet.getId());
 
         transfer.processAuthorization(authorizationServicePort.authorize(transfer));
 
         if (transfer.getStatus() == TransferStatus.REJECTED) {
+            senderWallet.refund(transfer.getValue());
+            walletRepositoryPort.save(senderWallet);
             transferRepositoryPort.save(transfer);
             return transfer;
         }
-
 
         receiverWallet.receive(transfer.getValue());
         walletRepositoryPort.save(receiverWallet);
