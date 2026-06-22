@@ -12,13 +12,16 @@ import io.github.solvo.domain.enums.TransferStatus;
 import io.github.solvo.domain.exceptions.WalletNotFoundException;
 
 public class TransferUseCase implements TransferUseCasePort {
+
     private final WalletRepositoryPort walletRepositoryPort;
     private final TransferRepositoryPort transferRepositoryPort;
     private final AuthorizationServicePort authorizationServicePort;
     private final NotificationPort notificationPort;
 
-    public TransferUseCase(WalletRepositoryPort walletRepositoryPort, TransferRepositoryPort transferRepositoryPort,
-                           AuthorizationServicePort authorizationServicePort, NotificationPort notificationPort) {
+    public TransferUseCase(WalletRepositoryPort walletRepositoryPort,
+                           TransferRepositoryPort transferRepositoryPort,
+                           AuthorizationServicePort authorizationServicePort,
+                           NotificationPort notificationPort) {
         this.walletRepositoryPort = walletRepositoryPort;
         this.transferRepositoryPort = transferRepositoryPort;
         this.authorizationServicePort = authorizationServicePort;
@@ -47,6 +50,7 @@ public class TransferUseCase implements TransferUseCasePort {
         walletRepositoryPort.save(senderWallet);
         transferRepositoryPort.save(transfer);
         notificationPort.notifyTransfer(transfer);
+
         return transfer;
     }
 }
