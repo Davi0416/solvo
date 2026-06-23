@@ -45,7 +45,7 @@ public class TransferUseCase implements TransferUseCasePort {
         }
 
 
-        receiverWallet.receive(transfer.getValue());
+        receiverWallet.receive(transfer.getAmount());
         walletRepositoryPort.save(receiverWallet);
         walletRepositoryPort.save(senderWallet);
         transferRepositoryPort.save(transfer);

@@ -108,7 +108,7 @@ public class TransferUseCaseTest {
     }
 
     @Test
-    void deveRecusarTransferenciaPorSerLojista() {
+    void deveDarErroPorSerLojista() {
         UUID merchantWalletId = merchant.getId();
         UUID receiverWalletId = receiverWallet.getId();
         BigDecimal transferValue = new BigDecimal("150.00");

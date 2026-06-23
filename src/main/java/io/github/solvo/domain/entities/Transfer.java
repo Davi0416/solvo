@@ -11,22 +11,22 @@ public class Transfer {
     private final UUID transferId;
     private final UUID senderWalletId;
     private final UUID receiverWalletId;
-    private final BigDecimal value;
+    private final BigDecimal amount;
     private TransferStatus status;
 
-    public Transfer(UUID transferId, UUID senderWalletId, UUID receiverWalletId, BigDecimal value) {
+    public Transfer(UUID transferId, UUID senderWalletId, UUID receiverWalletId, BigDecimal amount) {
         this.transferId = transferId;
         this.senderWalletId = senderWalletId;
         this.receiverWalletId = receiverWalletId;
-        this.value = value;
+        this.amount = amount;
         this.status = TransferStatus.PENDING;
     }
 
-    public Transfer(UUID senderWalletId, UUID receiverWalletId, BigDecimal value) {
+    public Transfer(UUID senderWalletId, UUID receiverWalletId, BigDecimal amount) {
         this.transferId = UUID.randomUUID();
         this.senderWalletId = senderWalletId;
         this.receiverWalletId = receiverWalletId;
-        this.value = value;
+        this.amount = amount;
         this.status = TransferStatus.PENDING;
     }
 
