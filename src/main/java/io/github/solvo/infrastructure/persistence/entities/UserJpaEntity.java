@@ -31,7 +31,6 @@ public class UserJpaEntity {
     private String document;
     private String email;
     private String phone;
-
     private LocalDateTime createdAt;
 
     public UserJpaEntity(UUID id, String name, String document, String email, UserType userType, String phone, LocalDateTime createdAt) {
