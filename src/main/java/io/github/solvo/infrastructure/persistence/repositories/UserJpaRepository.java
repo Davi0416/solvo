@@ -1,0 +1,9 @@
+package io.github.solvo.infrastructure.persistence.repositories;
+
+import io.github.solvo.infrastructure.persistence.entities.UserJpaEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.UUID;
+
+public interface UserJpaRepository extends JpaRepository<UserJpaEntity, UUID> {
+}
