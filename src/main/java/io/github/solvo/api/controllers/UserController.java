@@ -38,7 +38,7 @@ public class UserController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public UserResponse createUser(@RequestBody CreateUserRequest request) {
-        var user = userApiMapper.toDomain(request);
+        var user = userApiMapper.toCommand(request);
         var savedUser = userRepositoryPort.save(user);
         return userApiMapper.toResponse(savedUser);
     }
