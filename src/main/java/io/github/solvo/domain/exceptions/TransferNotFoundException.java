@@ -7,4 +7,3 @@ public class TransferNotFoundException extends RuntimeException {
         super(String.format("Transferência com o ID %s não encontrada.", transferId));
     }
 }
-
