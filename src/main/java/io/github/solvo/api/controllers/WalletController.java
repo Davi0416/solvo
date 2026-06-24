@@ -36,7 +36,7 @@ public class WalletController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public WalletResponse createWallet(@RequestBody CreateWalletRequest createWalletRequest) {
-        var wallet = walletApiMapper.toDomain(createWalletRequest);
+        var wallet = walletApiMapper.toCommand(createWalletRequest);
         var savedWallet = walletRepositoryPort.save(wallet);
         return walletApiMapper.toResponse(savedWallet);
     }
