@@ -30,9 +30,9 @@ public class TransferUseCase implements TransferUseCasePort {
 
     @Override
     public Transfer transfer(TransferCommand command) {
-        Wallet senderWallet = walletRepositoryPort.findByWalletId(command.senderWalletId())
+        Wallet senderWallet = walletRepositoryPort.findById(command.senderWalletId())
                 .orElseThrow(() -> new WalletNotFoundException(command.senderWalletId()));
-        Wallet receiverWallet = walletRepositoryPort.findByWalletId(command.receiverWalletId())
+        Wallet receiverWallet = walletRepositoryPort.findById(command.receiverWalletId())
                 .orElseThrow(() -> new WalletNotFoundException(command.receiverWalletId()));
 
         Transfer transfer = senderWallet.transfer(command.transferValue(), receiverWallet.getId());

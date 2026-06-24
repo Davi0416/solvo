@@ -20,6 +20,13 @@ public class Wallet {
         this.balance = balance;
     }
 
+    public Wallet(UUID userId, UserType userType) {
+        this.id = UUID.randomUUID();
+        this.userId = userId;
+        this.userType = userType;
+        this.balance = BigDecimal.ZERO;
+    }
+
     public Transfer transfer(BigDecimal transferValue, UUID receiverWalletId) {
         if (this.userType == UserType.MERCHANT)
             throw new IllegalArgumentException("Lojistas não têm permissão para realizar transferências.");

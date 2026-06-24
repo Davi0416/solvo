@@ -20,7 +20,7 @@ public class WalletRepositoryAdapter implements WalletRepositoryPort {
     }
 
     @Override
-    public Optional<Wallet> findByWalletId(UUID walletId) {
+    public Optional<Wallet> findById(UUID walletId) {
         return walletJpaRepository.findById(walletId)
                 .map(walletMapper::toDomain);
     }

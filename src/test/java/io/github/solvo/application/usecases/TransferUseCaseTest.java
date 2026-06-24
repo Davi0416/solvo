@@ -61,9 +61,9 @@ public class TransferUseCaseTest {
 
         when(authorizationServicePort.authorize(ArgumentMatchers.any()))
                 .thenReturn(true);
-        when(walletRepositoryPort.findByWalletId(senderWalletId))
+        when(walletRepositoryPort.findById(senderWalletId))
                 .thenReturn(Optional.of(senderWallet));
-        when(walletRepositoryPort.findByWalletId(receiverWalletId))
+        when(walletRepositoryPort.findById(receiverWalletId))
                 .thenReturn(Optional.of(receiverWallet));
 
         transferUseCase.transfer(transferCommand);
@@ -79,9 +79,9 @@ public class TransferUseCaseTest {
 
         TransferCommand transferCommand = new TransferCommand(senderWalletId, receiverWalletId, transferValue);
 
-        when(walletRepositoryPort.findByWalletId(senderWalletId))
+        when(walletRepositoryPort.findById(senderWalletId))
                 .thenReturn(Optional.of(senderWallet));
-        when(walletRepositoryPort.findByWalletId(receiverWalletId))
+        when(walletRepositoryPort.findById(receiverWalletId))
                 .thenReturn(Optional.of(receiverWallet));
 
         assertThrows(IllegalArgumentException.class, () -> transferUseCase.transfer(transferCommand));
@@ -97,9 +97,9 @@ public class TransferUseCaseTest {
 
         when(authorizationServicePort.authorize(ArgumentMatchers.any()))
                 .thenReturn(false);
-        when(walletRepositoryPort.findByWalletId(senderWalletId))
+        when(walletRepositoryPort.findById(senderWalletId))
                 .thenReturn(Optional.of(senderWallet));
-        when(walletRepositoryPort.findByWalletId(receiverWalletId))
+        when(walletRepositoryPort.findById(receiverWalletId))
                 .thenReturn(Optional.of(receiverWallet));
 
         Transfer trasfer = transferUseCase.transfer(transferCommand);
@@ -115,9 +115,9 @@ public class TransferUseCaseTest {
 
         TransferCommand transferCommand = new TransferCommand(merchantWalletId, receiverWalletId, transferValue);
 
-        when(walletRepositoryPort.findByWalletId(merchantWalletId))
+        when(walletRepositoryPort.findById(merchantWalletId))
                 .thenReturn(Optional.of(merchant));
-        when(walletRepositoryPort.findByWalletId(receiverWalletId))
+        when(walletRepositoryPort.findById(receiverWalletId))
                 .thenReturn(Optional.of(receiverWallet));
 
         assertThrows(IllegalArgumentException.class, () -> transferUseCase.transfer(transferCommand));
@@ -125,7 +125,7 @@ public class TransferUseCaseTest {
 
     @Test
     void deveDarErroCarteiraNaoEncontrada() {
-        when(walletRepositoryPort.findByWalletId(ArgumentMatchers.any()))
+        when(walletRepositoryPort.findById(ArgumentMatchers.any()))
                 .thenReturn(Optional.empty());
 
         assertThrows(WalletNotFoundException.class, () -> transferUseCase.transfer(new TransferCommand(UUID.randomUUID(), UUID.randomUUID(), new BigDecimal("100.00"))));
