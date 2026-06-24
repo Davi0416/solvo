@@ -10,7 +10,9 @@ import io.github.solvo.domain.entities.Transfer;
 import io.github.solvo.domain.entities.Wallet;
 import io.github.solvo.domain.enums.TransferStatus;
 import io.github.solvo.domain.exceptions.WalletNotFoundException;
+import org.springframework.stereotype.Component;
 
+@Component
 public class TransferUseCase implements TransferUseCasePort {
 
     private final WalletRepositoryPort walletRepositoryPort;
