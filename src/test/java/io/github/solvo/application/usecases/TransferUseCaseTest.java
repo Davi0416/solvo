@@ -101,6 +101,8 @@ class TransferUseCaseTest {
                 .thenReturn(Optional.of(senderWallet));
         when(walletRepositoryPort.findById(receiverWalletId))
                 .thenReturn(Optional.of(receiverWallet));
+        when(transferRepositoryPort.save(ArgumentMatchers.any()))
+                .thenAnswer(invocation -> invocation.getArgument(0));
 
         Transfer trasfer = transferUseCase.transfer(transferCommand);
 

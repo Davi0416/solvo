@@ -6,8 +6,6 @@ import io.github.solvo.infrastructure.persistence.entities.TransferJpaEntity;
 import io.github.solvo.infrastructure.persistence.repositories.WalletJpaRepository;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
-
 @Component
 public class TransferMapperImpl implements TransferMapper {
 
@@ -20,14 +18,12 @@ public class TransferMapperImpl implements TransferMapper {
     @Override
     public TransferJpaEntity toJpa(Transfer transfer) {
         return new TransferJpaEntity(
-                transfer.getTransferId(),
                 walletJpaRepository.findById(transfer.getSenderWalletId())
                         .orElseThrow(() -> new WalletNotFoundException(transfer.getSenderWalletId())),
                 walletJpaRepository.findById(transfer.getReceiverWalletId())
                         .orElseThrow(() -> new WalletNotFoundException(transfer.getReceiverWalletId())),
                 transfer.getAmount(),
-                transfer.getStatus(),
-                LocalDateTime.now()
+                transfer.getStatus()
         );
     }
 
