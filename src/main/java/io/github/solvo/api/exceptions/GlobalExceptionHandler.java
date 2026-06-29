@@ -4,6 +4,8 @@ import io.github.solvo.api.dtos.ErrorResponse;
 import io.github.solvo.domain.exceptions.TransferNotFoundException;
 import io.github.solvo.domain.exceptions.UserNotFoundException;
 import io.github.solvo.domain.exceptions.WalletNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -12,6 +14,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(WalletNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
@@ -45,7 +49,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handleGenericException() {
+    public ErrorResponse handleGenericException(Exception ex) {
+        log.error("Erro inesperado ao processar requisicao", ex);
         return new ErrorResponse("An unexpected error occurred.", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
