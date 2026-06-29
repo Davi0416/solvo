@@ -1,6 +1,5 @@
 package io.github.solvo.infrastructure.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,7 +18,7 @@ public class RedisCacheConfig {
 
     @Bean
     public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory) {
-        var jsonSerializer = new GenericJackson2JsonRedisSerializer(new ObjectMapper());
+        var jsonSerializer = new GenericJackson2JsonRedisSerializer();
         var defaultConfig = RedisCacheConfiguration.defaultCacheConfig()
                 .entryTtl(Duration.ofMinutes(5))
                 .disableCachingNullValues()
