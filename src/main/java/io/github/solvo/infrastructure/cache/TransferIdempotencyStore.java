@@ -16,11 +16,10 @@ public class TransferIdempotencyStore {
     private static final Duration TTL = Duration.ofHours(24);
 
     private final StringRedisTemplate redisTemplate;
-    private final ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public TransferIdempotencyStore(StringRedisTemplate redisTemplate, ObjectMapper objectMapper) {
+    public TransferIdempotencyStore(StringRedisTemplate redisTemplate) {
         this.redisTemplate = redisTemplate;
-        this.objectMapper = objectMapper;
     }
 
     public Optional<TransferResponse> find(String idempotencyKey) {

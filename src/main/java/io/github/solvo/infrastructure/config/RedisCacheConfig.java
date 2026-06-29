@@ -18,8 +18,8 @@ import java.util.Map;
 public class RedisCacheConfig {
 
     @Bean
-    public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory, ObjectMapper objectMapper) {
-        var jsonSerializer = new GenericJackson2JsonRedisSerializer(objectMapper);
+    public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory) {
+        var jsonSerializer = new GenericJackson2JsonRedisSerializer(new ObjectMapper());
         var defaultConfig = RedisCacheConfiguration.defaultCacheConfig()
                 .entryTtl(Duration.ofMinutes(5))
                 .disableCachingNullValues()
