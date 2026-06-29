@@ -7,6 +7,7 @@ public record CreateUserRequest(
         String document,
         UserType userType,
         String email,
+        String password,
         String phone
 ) {
 }

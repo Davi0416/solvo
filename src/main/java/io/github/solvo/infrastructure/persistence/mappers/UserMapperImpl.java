@@ -14,6 +14,7 @@ public class UserMapperImpl implements UserMapper {
                 user.getDocument(),
                 user.getEmail(),
                 user.getUserType(),
+                user.getPassword(),
                 user.getPhone()
         );
     }
@@ -26,6 +27,7 @@ public class UserMapperImpl implements UserMapper {
                 entity.getDocument(),
                 entity.getUserType(),
                 entity.getEmail(),
+                entity.getPassword(),
                 entity.getPhone()
         );
     }

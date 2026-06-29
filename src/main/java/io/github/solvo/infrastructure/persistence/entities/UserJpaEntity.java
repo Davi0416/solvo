@@ -30,6 +30,7 @@ public class UserJpaEntity {
     private String name;
     private String document;
     private String email;
+    private String password;
     private String phone;
     private LocalDateTime createdAt;
 
@@ -43,11 +44,12 @@ public class UserJpaEntity {
         this.createdAt = createdAt;
     }
 
-    public UserJpaEntity(String name, String document, String email, UserType userType, String phone) {
+    public UserJpaEntity(String name, String document, String email, UserType userType, String password, String phone) {
         this.name = name;
         this.document = document;
         this.userType = userType;
         this.email = email;
+        this.password = password;
         this.phone = phone;
         this.createdAt = LocalDateTime.now();
     }
