@@ -3,9 +3,8 @@ package io.github.solvo.api.controllers;
 import io.github.solvo.api.dtos.CreateTransferRequest;
 import io.github.solvo.api.dtos.TransferResponse;
 import io.github.solvo.api.mappers.TransferApiMapper;
+import io.github.solvo.application.ports.in.ConsultarTransferenciaUseCasePort;
 import io.github.solvo.application.ports.in.TransferUseCasePort;
-import io.github.solvo.application.ports.out.TransferRepositoryPort;
-import io.github.solvo.domain.exceptions.TransferNotFoundException;
 import io.github.solvo.infrastructure.cache.TransferIdempotencyStore;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
@@ -26,25 +25,23 @@ public class TransferController {
 
     private final TransferApiMapper transferApiMapper;
     private final TransferUseCasePort transferUseCasePort;
-    private final TransferRepositoryPort transferRepositoryPort;
+    private final ConsultarTransferenciaUseCasePort consultarTransferenciaUseCasePort;
     private final TransferIdempotencyStore idempotencyStore;
 
     public TransferController(TransferApiMapper transferApiMapper,
                               TransferUseCasePort transferUseCasePort,
-                              TransferRepositoryPort transferRepositoryPort,
+                              ConsultarTransferenciaUseCasePort consultarTransferenciaUseCasePort,
                               TransferIdempotencyStore idempotencyStore) {
         this.transferApiMapper = transferApiMapper;
         this.transferUseCasePort = transferUseCasePort;
-        this.transferRepositoryPort = transferRepositoryPort;
+        this.consultarTransferenciaUseCasePort = consultarTransferenciaUseCasePort;
         this.idempotencyStore = idempotencyStore;
     }
 
     @Cacheable(cacheNames = "transfers", key = "#id")
     @GetMapping("/{id}")
     public TransferResponse getTransfer(@PathVariable UUID id) {
-        return transferRepositoryPort.findTransferId(id)
-                .map(transferApiMapper::toResponse)
-                .orElseThrow(() -> new TransferNotFoundException(id));
+        return transferApiMapper.toResponse(consultarTransferenciaUseCasePort.consultar(id));
     }
 
     @ResponseStatus(HttpStatus.CREATED)
