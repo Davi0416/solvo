@@ -1,0 +1,8 @@
+ALTER TABLE users
+    ADD COLUMN password VARCHAR(100) NOT NULL DEFAULT '';
+
+ALTER TABLE users
+    ALTER COLUMN password DROP DEFAULT;
+
+ALTER TABLE users
+    ADD CONSTRAINT users_email_key UNIQUE (email);

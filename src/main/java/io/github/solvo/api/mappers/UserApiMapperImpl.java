@@ -27,6 +27,7 @@ public class UserApiMapperImpl implements UserApiMapper {
                 entity.document(),
                 entity.userType(),
                 entity.email(),
+                entity.password(),
                 entity.phone()
         );
     }
