@@ -4,6 +4,7 @@ import io.github.solvo.application.ports.out.WalletRepositoryPort;
 import io.github.solvo.domain.entities.Wallet;
 import io.github.solvo.infrastructure.persistence.mappers.WalletMapper;
 import io.github.solvo.infrastructure.persistence.repositories.WalletJpaRepository;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -26,6 +27,7 @@ public class WalletRepositoryAdapter implements WalletRepositoryPort {
     }
 
     @Override
+    @CacheEvict(cacheNames = "wallets", key = "#wallet.id")
     public Wallet save(Wallet wallet) {
         return walletMapper.toDomain(walletJpaRepository.save(walletMapper.toJpa(wallet)));
     }

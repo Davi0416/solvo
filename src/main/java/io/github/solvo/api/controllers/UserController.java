@@ -6,6 +6,7 @@ import io.github.solvo.api.mappers.UserApiMapper;
 import io.github.solvo.application.ports.out.UserRepositoryPort;
 import io.github.solvo.domain.exceptions.UserNotFoundException;
 import io.github.solvo.domain.ports.PasswordHasher;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,6 +32,7 @@ public class UserController {
         this.passwordHasher = passwordHasher;
     }
 
+    @Cacheable(cacheNames = "users", key = "#id")
     @GetMapping("/{id}")
     public UserResponse getUser(@PathVariable UUID id) {
         return userRepositoryPort.findById(id)
