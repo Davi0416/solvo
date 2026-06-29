@@ -4,6 +4,7 @@ import io.github.solvo.application.ports.out.UserRepositoryPort;
 import io.github.solvo.domain.entities.User;
 import io.github.solvo.infrastructure.persistence.mappers.UserMapper;
 import io.github.solvo.infrastructure.persistence.repositories.UserJpaRepository;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -33,6 +34,7 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
     }
 
     @Override
+    @CacheEvict(cacheNames = "users", key = "#user.id")
     public User save(User user) {
         return userMapper.toDomain(userJpaRepository.save(userMapper.toJpa(user)));
     }
