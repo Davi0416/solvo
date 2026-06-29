@@ -5,6 +5,7 @@ import io.github.solvo.api.dtos.WalletResponse;
 import io.github.solvo.api.mappers.WalletApiMapper;
 import io.github.solvo.application.ports.out.WalletRepositoryPort;
 import io.github.solvo.domain.exceptions.WalletNotFoundException;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,6 +28,7 @@ public class WalletController {
         this.walletRepositoryPort = walletRepositoryPort;
     }
 
+    @Cacheable(cacheNames = "wallets", key = "#id")
     @GetMapping("/{id}")
     public WalletResponse getWallet(@PathVariable UUID id) {
         return walletApiMapper.toResponse(walletRepositoryPort.findById(id)

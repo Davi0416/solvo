@@ -21,7 +21,6 @@ O Solvo simula uma plataforma de pagamentos onde usuários podem manter saldo em
 - Integração com serviço externo de autorização (mock) antes de efetivar a transferência
 - Notificação assíncrona ao recebedor via Kafka
 - Cache de leitura e controle de idempotência de transferências via Redis
-- Circuit breaker e retry na chamada ao serviço externo, via Resilience4j
 - Documentação interativa da API via Swagger UI
 - Testes unitários (JUnit 5 + Mockito) e de integração com banco e Kafka reais (Testcontainers)
 - Pipeline de CI no GitHub Actions
@@ -33,7 +32,7 @@ O projeto segue uma separação em camadas inspirada em Clean Architecture:
 ```
 domain/          → entidades de negócio e regras puras (Usuario, Conta, Carteira, Transacao)
 application/     → casos de uso (RealizarTransferencia, CriarUsuario, ConsultarHistorico)
-infrastructure/  → repositórios JPA, cliente do serviço de autorização, producer/consumer Kafka, Redis
+infrastructure/  → repositórios JPA, cliente do serviço de autorização, producer/consumer Kafka, cache Redis
 api/             → controllers REST, DTOs, tratamento de exceções, configuração de segurança
 ```
 
@@ -42,7 +41,7 @@ Fluxo simplificado de uma transferência:
 ```
 Cliente → POST /transferencias
         → valida saldo e tipo de conta
-        → consulta serviço externo de autorização (com retry/circuit breaker)
+        → consulta serviço externo de autorização
         → autorizado? debita pagador, credita recebedor, persiste transação
         → publica evento no Kafka
         → consumer processa e simula notificação ao recebedor
@@ -60,7 +59,6 @@ Cliente → POST /transferencias
 | Mensageria            | Apache Kafka                     |
 | Mapeamento            | MapStruct                        |
 | Produtividade         | Lombok                           |
-| Resiliência           | Resilience4j                     |
 | Documentação de API   | springdoc-openapi (Swagger)      |
 | Testes                | JUnit 5, Mockito, Testcontainers |
 | Containerização       | Docker, Docker Compose           |

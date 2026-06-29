@@ -1,0 +1,19 @@
+jwt:
+  secret: integration-test-secret-not-for-production-use-1234567890
+  expiration-ms: 3600000
+
+kafka:
+  topics:
+    transfer-completed: transfer-completed
+
+spring:
+  kafka:
+    consumer:
+      group-id: solvo-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: io.github.solvo.infrastructure.notification
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer

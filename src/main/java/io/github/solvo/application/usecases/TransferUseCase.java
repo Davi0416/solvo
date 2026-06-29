@@ -42,16 +42,15 @@ public class TransferUseCase implements TransferUseCasePort {
         transfer.processAuthorization(authorizationServicePort.authorize(transfer));
 
         if (transfer.getStatus() == TransferStatus.REJECTED) {
-            transferRepositoryPort.save(transfer);
-            return transfer;
+            return transferRepositoryPort.save(transfer);
         }
 
         receiverWallet.receive(transfer.getAmount());
         walletRepositoryPort.save(receiverWallet);
         walletRepositoryPort.save(senderWallet);
-        transferRepositoryPort.save(transfer);
-        notificationPort.notifyTransfer(transfer);
+        Transfer savedTransfer = transferRepositoryPort.save(transfer);
+        notificationPort.notifyTransfer(savedTransfer);
 
-        return transfer;
+        return savedTransfer;
     }
 }
