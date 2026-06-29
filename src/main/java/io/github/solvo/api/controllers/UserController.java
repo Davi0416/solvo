@@ -5,6 +5,7 @@ import io.github.solvo.api.dtos.UserResponse;
 import io.github.solvo.api.mappers.UserApiMapper;
 import io.github.solvo.application.ports.out.UserRepositoryPort;
 import io.github.solvo.domain.exceptions.UserNotFoundException;
+import io.github.solvo.domain.ports.PasswordHasher;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,10 +23,12 @@ public class UserController {
 
     private final UserRepositoryPort userRepositoryPort;
     private final UserApiMapper userApiMapper;
+    private final PasswordHasher passwordHasher;
 
-    public UserController(UserRepositoryPort userRepositoryPort, UserApiMapper userApiMapper) {
+    public UserController(UserRepositoryPort userRepositoryPort, UserApiMapper userApiMapper, PasswordHasher passwordHasher) {
         this.userRepositoryPort = userRepositoryPort;
         this.userApiMapper = userApiMapper;
+        this.passwordHasher = passwordHasher;
     }
 
     @GetMapping("/{id}")
@@ -39,6 +42,7 @@ public class UserController {
     @PostMapping
     public UserResponse createUser(@RequestBody CreateUserRequest request) {
         var user = userApiMapper.toCommand(request);
+        user.setPassword(passwordHasher.hash(user.getPassword()));
         var savedUser = userRepositoryPort.save(user);
         return userApiMapper.toResponse(savedUser);
     }
