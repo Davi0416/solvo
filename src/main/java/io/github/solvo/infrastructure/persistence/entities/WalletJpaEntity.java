@@ -54,4 +54,8 @@ public class WalletJpaEntity {
 
     protected WalletJpaEntity() {
     }
+
+    public void updateBalance(BigDecimal balance) {
+        this.balance = balance;
+    }
 }
