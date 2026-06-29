@@ -4,6 +4,7 @@ import io.github.solvo.application.ports.out.AuthorizationServicePort;
 import io.github.solvo.domain.entities.Transfer;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
 @Component
@@ -17,12 +18,16 @@ public class AuthorizationServiceAdapter implements AuthorizationServicePort {
 
     @Override
     public boolean authorize(Transfer transferRequest) {
-        AuthorizationResponse response = restClient.get()
-                .uri("https://util.devi.tools/api/v2/authorize")
-                .accept(MediaType.APPLICATION_JSON)
-                .retrieve()
-                .body(AuthorizationResponse.class);
+        try {
+            AuthorizationResponse response = restClient.get()
+                    .uri("https://util.devi.tools/api/v2/authorize")
+                    .accept(MediaType.APPLICATION_JSON)
+                    .retrieve()
+                    .body(AuthorizationResponse.class);
 
-        return response != null && response.data().authorization();
+            return response != null && response.data().authorization();
+        } catch (HttpClientErrorException e) {
+            return false;
+        }
     }
 }
