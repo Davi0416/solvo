@@ -11,6 +11,7 @@ import io.github.solvo.domain.entities.Wallet;
 import io.github.solvo.domain.enums.TransferStatus;
 import io.github.solvo.domain.exceptions.WalletNotFoundException;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class TransferUseCase implements TransferUseCasePort {
@@ -31,6 +32,7 @@ public class TransferUseCase implements TransferUseCasePort {
     }
 
     @Override
+    @Transactional
     public Transfer transfer(TransferCommand command) {
         Wallet senderWallet = walletRepositoryPort.findById(command.senderWalletId())
                 .orElseThrow(() -> new WalletNotFoundException(command.senderWalletId()));
