@@ -28,6 +28,8 @@ public class Wallet {
     }
 
     public Transfer transfer(BigDecimal transferValue, UUID receiverWalletId) {
+        if (this.id.equals(receiverWalletId))
+            throw new IllegalArgumentException("Não é permitido transferir para a própria carteira");
         if (this.userType == UserType.MERCHANT)
             throw new IllegalArgumentException("Lojistas não têm permissão para realizar transferências.");
         if (transferValue.compareTo(BigDecimal.ZERO) <= 0)
