@@ -61,9 +61,9 @@ class TransferUseCaseTest {
 
         when(authorizationServicePort.authorize(ArgumentMatchers.any()))
                 .thenReturn(true);
-        when(walletRepositoryPort.findById(senderWalletId))
+        when(walletRepositoryPort.findByIdForUpdate(senderWalletId))
                 .thenReturn(Optional.of(senderWallet));
-        when(walletRepositoryPort.findById(receiverWalletId))
+        when(walletRepositoryPort.findByIdForUpdate(receiverWalletId))
                 .thenReturn(Optional.of(receiverWallet));
 
         transferUseCase.transfer(transferCommand);
@@ -79,34 +79,36 @@ class TransferUseCaseTest {
 
         TransferCommand transferCommand = new TransferCommand(senderWalletId, receiverWalletId, transferValue);
 
-        when(walletRepositoryPort.findById(senderWalletId))
+        when(walletRepositoryPort.findByIdForUpdate(senderWalletId))
                 .thenReturn(Optional.of(senderWallet));
-        when(walletRepositoryPort.findById(receiverWalletId))
+        when(walletRepositoryPort.findByIdForUpdate(receiverWalletId))
                 .thenReturn(Optional.of(receiverWallet));
 
         assertThrows(IllegalArgumentException.class, () -> transferUseCase.transfer(transferCommand));
     }
 
     @Test
-    void deveRecusarTransferenciaPorAutorizacao() {
+    void deveRecusarTransferenciaPorAutorizacaoERestaurarSaldo() {
         UUID senderWalletId = senderWallet.getId();
         UUID receiverWalletId = receiverWallet.getId();
         BigDecimal transferValue = new BigDecimal("50.00");
+        BigDecimal saldoOriginal = senderWallet.getBalance();
 
         TransferCommand transferCommand = new TransferCommand(senderWalletId, receiverWalletId, transferValue);
 
         when(authorizationServicePort.authorize(ArgumentMatchers.any()))
                 .thenReturn(false);
-        when(walletRepositoryPort.findById(senderWalletId))
+        when(walletRepositoryPort.findByIdForUpdate(senderWalletId))
                 .thenReturn(Optional.of(senderWallet));
-        when(walletRepositoryPort.findById(receiverWalletId))
+        when(walletRepositoryPort.findByIdForUpdate(receiverWalletId))
                 .thenReturn(Optional.of(receiverWallet));
         when(transferRepositoryPort.save(ArgumentMatchers.any()))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
-        Transfer trasfer = transferUseCase.transfer(transferCommand);
+        Transfer transfer = transferUseCase.transfer(transferCommand);
 
-        assertEquals(TransferStatus.REJECTED, trasfer.getStatus());
+        assertEquals(TransferStatus.REJECTED, transfer.getStatus());
+        assertEquals(saldoOriginal, senderWallet.getBalance());
     }
 
     @Test
@@ -117,9 +119,9 @@ class TransferUseCaseTest {
 
         TransferCommand transferCommand = new TransferCommand(merchantWalletId, receiverWalletId, transferValue);
 
-        when(walletRepositoryPort.findById(merchantWalletId))
+        when(walletRepositoryPort.findByIdForUpdate(merchantWalletId))
                 .thenReturn(Optional.of(merchant));
-        when(walletRepositoryPort.findById(receiverWalletId))
+        when(walletRepositoryPort.findByIdForUpdate(receiverWalletId))
                 .thenReturn(Optional.of(receiverWallet));
 
         assertThrows(IllegalArgumentException.class, () -> transferUseCase.transfer(transferCommand));
@@ -127,9 +129,21 @@ class TransferUseCaseTest {
 
     @Test
     void deveDarErroCarteiraNaoEncontrada() {
-        when(walletRepositoryPort.findById(ArgumentMatchers.any()))
+        when(walletRepositoryPort.findByIdForUpdate(ArgumentMatchers.any()))
                 .thenReturn(Optional.empty());
 
-        assertThrows(WalletNotFoundException.class, () -> transferUseCase.transfer(new TransferCommand(UUID.randomUUID(), UUID.randomUUID(), new BigDecimal("100.00"))));
+        assertThrows(WalletNotFoundException.class, () -> transferUseCase.transfer(
+                new TransferCommand(UUID.randomUUID(), UUID.randomUUID(), new BigDecimal("100.00"))));
+    }
+
+    @Test
+    void deveLancarErroQuandoRemetenteEDestinatarioForemIguais() {
+        UUID walletId = senderWallet.getId();
+        TransferCommand command = new TransferCommand(walletId, walletId, new BigDecimal("10.00"));
+
+        when(walletRepositoryPort.findByIdForUpdate(walletId))
+                .thenReturn(Optional.of(senderWallet));
+
+        assertThrows(IllegalArgumentException.class, () -> transferUseCase.transfer(command));
     }
 }

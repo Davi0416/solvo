@@ -154,4 +154,64 @@ class TransferControllerIntegrationTest extends IntegrationTestBase {
                 new HttpEntity<>(sender.headers()), WalletResponse.class, sender.wallet().id()).getBody();
         assertThat(senderWallet.balance()).isEqualByComparingTo(new BigDecimal("70.00"));
     }
+
+    @Test
+    void deveNegarTransferenciaDeCarteiraDeOutroUsuario() {
+        when(authorizationServicePort.authorize(any())).thenReturn(true);
+
+        var victima = criarUsuarioComCarteira(UserType.CONSUMER, new BigDecimal("100.00"));
+        var atacante = criarUsuarioComCarteira(UserType.CONSUMER, BigDecimal.ZERO);
+
+        var request = new CreateTransferRequest(victima.wallet().id(), atacante.wallet().id(), new BigDecimal("50.00"));
+        var entity = new HttpEntity<>(request, atacante.headers());
+
+        ResponseEntity<String> response = restTemplate.postForEntity("/api/v1/transfers", entity, String.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+    }
+
+    @Test
+    void deveNegarConsultaDeCarteiraDeOutroUsuario() {
+        var dono = criarUsuarioComCarteira(UserType.CONSUMER, new BigDecimal("100.00"));
+        var outro = criarUsuarioComCarteira(UserType.CONSUMER, BigDecimal.ZERO);
+
+        var response = restTemplate.exchange("/api/v1/wallets/{id}", org.springframework.http.HttpMethod.GET,
+                new HttpEntity<>(outro.headers()), String.class, dono.wallet().id());
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+    }
+
+    @Test
+    void deveNegarTransferenciaParaMesmaCarteira() {
+        when(authorizationServicePort.authorize(any())).thenReturn(true);
+
+        var sender = criarUsuarioComCarteira(UserType.CONSUMER, new BigDecimal("100.00"));
+
+        var request = new CreateTransferRequest(sender.wallet().id(), sender.wallet().id(), new BigDecimal("10.00"));
+        var entity = new HttpEntity<>(request, sender.headers());
+
+        ResponseEntity<String> response = restTemplate.postForEntity("/api/v1/transfers", entity, String.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    void deveRestaurarSaldoQuandoTransferenciaForRejeitada() {
+        when(authorizationServicePort.authorize(any())).thenReturn(false);
+
+        var sender = criarUsuarioComCarteira(UserType.CONSUMER, new BigDecimal("100.00"));
+        var receiver = criarUsuarioComCarteira(UserType.CONSUMER, BigDecimal.ZERO);
+
+        var request = new CreateTransferRequest(sender.wallet().id(), receiver.wallet().id(), new BigDecimal("30.00"));
+        var entity = new HttpEntity<>(request, sender.headers());
+
+        ResponseEntity<TransferResponse> response = restTemplate.postForEntity("/api/v1/transfers", entity, TransferResponse.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        assertThat(response.getBody().status()).isEqualTo(TransferStatus.REJECTED);
+
+        var senderWallet = restTemplate.exchange("/api/v1/wallets/{id}", org.springframework.http.HttpMethod.GET,
+                new HttpEntity<>(sender.headers()), WalletResponse.class, sender.wallet().id()).getBody();
+        assertThat(senderWallet.balance()).isEqualByComparingTo(new BigDecimal("100.00"));
+    }
 }
