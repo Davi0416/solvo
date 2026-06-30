@@ -27,6 +27,12 @@ public class WalletRepositoryAdapter implements WalletRepositoryPort {
     }
 
     @Override
+    public Optional<Wallet> findByIdForUpdate(UUID walletId) {
+        return walletJpaRepository.findByIdWithLock(walletId)
+                .map(walletMapper::toDomain);
+    }
+
+    @Override
     @CacheEvict(cacheNames = "wallets", key = "#wallet.id")
     public Wallet save(Wallet wallet) {
         return walletMapper.toDomain(walletJpaRepository.save(walletMapper.toJpa(wallet)));

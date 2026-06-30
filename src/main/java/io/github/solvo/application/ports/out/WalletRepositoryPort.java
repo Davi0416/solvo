@@ -8,6 +8,7 @@ import java.util.UUID;
 public interface WalletRepositoryPort {
     Optional<Wallet> findById(UUID walletId);
 
+    Optional<Wallet> findByIdForUpdate(UUID walletId);
 
     Wallet save(Wallet wallet);
 }
