@@ -3,6 +3,8 @@ package io.github.solvo.infrastructure.cache;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.solvo.api.dtos.TransferResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -12,14 +14,16 @@ import java.util.Optional;
 @Component
 public class TransferIdempotencyStore {
 
+    private static final Logger log = LoggerFactory.getLogger(TransferIdempotencyStore.class);
     private static final String KEY_PREFIX = "idempotency:transfer:";
     private static final Duration TTL = Duration.ofHours(24);
 
     private final StringRedisTemplate redisTemplate;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper;
 
-    public TransferIdempotencyStore(StringRedisTemplate redisTemplate) {
+    public TransferIdempotencyStore(StringRedisTemplate redisTemplate, ObjectMapper objectMapper) {
         this.redisTemplate = redisTemplate;
+        this.objectMapper = objectMapper;
     }
 
     public Optional<TransferResponse> find(String idempotencyKey) {
@@ -30,6 +34,7 @@ public class TransferIdempotencyStore {
         try {
             return Optional.of(objectMapper.readValue(json, TransferResponse.class));
         } catch (JsonProcessingException e) {
+            log.warn("Falha ao desserializar resposta de idempotência para chave: {}", idempotencyKey, e);
             return Optional.empty();
         }
     }
@@ -38,7 +43,8 @@ public class TransferIdempotencyStore {
         try {
             String json = objectMapper.writeValueAsString(response);
             redisTemplate.opsForValue().set(KEY_PREFIX + idempotencyKey, json, TTL);
-        } catch (JsonProcessingException ignored) {
+        } catch (JsonProcessingException e) {
+            log.error("Falha ao serializar resposta para idempotência, chave: {}", idempotencyKey, e);
         }
     }
 }

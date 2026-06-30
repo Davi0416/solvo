@@ -4,6 +4,6 @@ import java.util.UUID;
 
 public class TransferNotFoundException extends RuntimeException {
     public TransferNotFoundException(UUID transferId) {
-        super(String.format("Transferência com o ID %s não encontrada.", transferId));
+        super("Transferência não encontrada");
     }
 }
