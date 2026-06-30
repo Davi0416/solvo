@@ -34,9 +34,9 @@ public class TransferUseCase implements TransferUseCasePort {
     @Override
     @Transactional
     public Transfer transfer(TransferCommand command) {
-        Wallet senderWallet = walletRepositoryPort.findById(command.senderWalletId())
+        Wallet senderWallet = walletRepositoryPort.findByIdForUpdate(command.senderWalletId())
                 .orElseThrow(() -> new WalletNotFoundException(command.senderWalletId()));
-        Wallet receiverWallet = walletRepositoryPort.findById(command.receiverWalletId())
+        Wallet receiverWallet = walletRepositoryPort.findByIdForUpdate(command.receiverWalletId())
                 .orElseThrow(() -> new WalletNotFoundException(command.receiverWalletId()));
 
         Transfer transfer = senderWallet.transfer(command.transferValue(), receiverWallet.getId());
@@ -44,6 +44,8 @@ public class TransferUseCase implements TransferUseCasePort {
         transfer.processAuthorization(authorizationServicePort.authorize(transfer));
 
         if (transfer.getStatus() == TransferStatus.REJECTED) {
+            senderWallet.refund(transfer.getAmount());
+            walletRepositoryPort.save(senderWallet);
             return transferRepositoryPort.save(transfer);
         }
 
