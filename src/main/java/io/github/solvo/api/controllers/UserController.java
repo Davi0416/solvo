@@ -3,9 +3,12 @@ package io.github.solvo.api.controllers;
 import io.github.solvo.api.dtos.CreateUserRequest;
 import io.github.solvo.api.dtos.UserResponse;
 import io.github.solvo.api.mappers.UserApiMapper;
+import io.github.solvo.api.security.SecurityUtils;
 import io.github.solvo.application.ports.out.UserRepositoryPort;
+import io.github.solvo.domain.exceptions.ForbiddenException;
 import io.github.solvo.domain.exceptions.UserNotFoundException;
 import io.github.solvo.domain.ports.PasswordHasher;
+import jakarta.validation.Valid;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,6 +38,9 @@ public class UserController {
     @Cacheable(cacheNames = "users", key = "#id")
     @GetMapping("/{id}")
     public UserResponse getUser(@PathVariable UUID id) {
+        if (!id.equals(SecurityUtils.getCurrentUserId())) {
+            throw new ForbiddenException();
+        }
         return userRepositoryPort.findById(id)
                 .map(userApiMapper::toResponse)
                 .orElseThrow(() -> new UserNotFoundException(id));
@@ -42,7 +48,7 @@ public class UserController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public UserResponse createUser(@RequestBody CreateUserRequest request) {
+    public UserResponse createUser(@Valid @RequestBody CreateUserRequest request) {
         var user = userApiMapper.toCommand(request);
         user.setPassword(passwordHasher.hash(user.getPassword()));
         var savedUser = userRepositoryPort.save(user);
